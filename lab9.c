@@ -139,14 +139,50 @@ void printRecords(struct RecordType pData[], int dataSz)
 // index x -> id, name, order -> id, name, order ....
 void displayRecordsInHash(struct HashType *pHashArray, int hashSz)
 {
+	
 	int i;
-	for (i=0;i<100;++i)
+
+	struct Node* bucketHead;
+
+	
+
+	for(i = 2; i < 100; i++)
+
 	{
-		if(pHashArray->arr != NULL)
-		{
-			//printf("%d\n", pHashArray->arr[i]->data->id);
-		}
+
+	    if(pHashArray->arr[i] != NULL)
+
+	    {
+
+	        //printf("AT: %d, ID: %d\n", i, pHashArray->arr[i]->data->id);
+
+	        printf("idex %d", i);
+
+	        
+
+	        bucketHead = pHashArray->arr[i];
+
+	        while(bucketHead != NULL)
+
+	        {
+
+	            printf(" -> %d, %c, %d", pHashArray->arr[i]->data->id, pHashArray->arr[i]->data->name, pHashArray->arr[i]->data->order);
+
+	            bucketHead = bucketHead->next;
+
+	        }
+
+	        
+
+	        printf("\n");
+
+	    }
+
 	}
+
+
+
+	return;
 }
 
 int main(void)
