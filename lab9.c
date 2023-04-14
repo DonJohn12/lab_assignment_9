@@ -3,22 +3,86 @@
 // RecordType
 struct RecordType
 {
-	int		id;
-	char	name;
+	int		id; //key
+	char	name; //value
 	int		order; 
 };
 
-// Fill out this structure
-struct HashType
-{
-
+struct Node{
+	struct RecordType* data;
+	struct RecordType* next;
 };
 
-// Compute the hash function
-int hash(int x)
+struct HashType
 {
+	int num;
+	int capacity;
+	struct Node** arr;
+};
 
+void setNode(struct Node* node, struct RecordType* data)
+{
+	node->data = data;
+	node->next = NULL;
+	return;
 }
+
+void initializeHashMap(struct HashType* map)
+{
+	map->capacity = 100;
+	map->num = 0;
+	map->arr = (struct Node**)malloc(sizeof(struct Node*)*map->capacity);
+}
+
+
+int hashFunction(struct HashType* map, struct RecordType* data)
+{
+	int bucket;
+	int sum = 0;
+	int factor = 31;
+	
+	int key = data->id;
+	while(key > 0)
+	{
+		sum = ((sum % map->capacity) + ((key % 10) * factor) % map->capacity) % map->capacity;
+		factor = ((factor % __INT16_MAX__) * (31 % __INT16_MAX__) % __INT16_MAX__);
+		key /= 10;
+	}
+	
+	bucket = sum;
+	return bucket;
+}
+
+
+void insert(struct HashType* map, struct RecordType** ppData, int size)
+{
+	int i;
+	struct RecordType *data;
+	for(i = 0; i < size; i++)
+	{
+		data = *ppData + i;
+	
+		int bucket = hashFunction(map, data);
+		struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+		
+		setNode(newNode, data);
+		
+		if(map->arr[bucket] == NULL) 
+		{
+			map->arr[bucket] = newNode;
+		}
+		else
+		{
+			newNode->next = map->arr[bucket];
+			map->arr[bucket] = newNode;
+		}
+		
+		printf("%d\n", data->id);
+	}
+
+	return;
+}
+
 
 // parses input file to an integer array
 int parseData(char* inputFileName, struct RecordType** ppData)
@@ -76,10 +140,12 @@ void printRecords(struct RecordType pData[], int dataSz)
 void displayRecordsInHash(struct HashType *pHashArray, int hashSz)
 {
 	int i;
-
-	for (i=0;i<hashSz;++i)
+	for (i=0;i<100;++i)
 	{
-		// if index is occupied with any records, print all
+		if(pHashArray->arr != NULL)
+		{
+			//printf("%d\n", pHashArray->arr[i]->data->id);
+		}
 	}
 }
 
@@ -90,5 +156,12 @@ int main(void)
 
 	recordSz = parseData("input.txt", &pRecords);
 	printRecords(pRecords, recordSz);
+	
 	// Your hash implementation
+	struct HashType* map = (struct HashType*)malloc(sizeof(struct HashType));
+	initializeHashMap(map);
+	insert(map, &pRecords, recordSz);
+	displayRecordsInHash(map, recordSz);
+	
+	return 0;	
 }
